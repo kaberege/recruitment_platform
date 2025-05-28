@@ -16,7 +16,7 @@ class Job(models.Model):
     requirements = models.TextField()
     location = models.CharField(max_length=100)
     job_type = models.CharField(max_length=50, choices=JOB_TYPE_CHOICES)
-    salary_range = models.CharField(max_length=100, blank=True)
+    salary_range = models.CharField(max_length=100, blank=True, null=True)
     deadline = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
