@@ -16,6 +16,11 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user  # Return the created user
 
+    def validate_password(self, value):
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters long.")
+        return value
+
 # Serializer class for updating user profile
 class UpdateUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -31,6 +36,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
 
         if password:
+            if len(password) < 8:
+                raise serializers.ValidationError("Password must be at least 8 characters long.")
             instance.set_password(password)
 
         instance.save()

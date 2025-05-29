@@ -4,7 +4,7 @@ from .models import JobSeekerApplication, Job
 import os
 
 class JobSerializer(serializers.ModelSerializer):
-    recruiter = serializers.ForeignKeyRelatedFieald(read_only=True)
+    recruiter = serializers.PrimaryKeyRelatedField(read_only=True)
     salary_range = serializers.CharField(required=False)
     deadline = serializers.DateField(format="%Y-%m-%d", input_formats=["%Y-%m-%d"])
     created_at = serializers.DateTimeField(format='%Y-%m-%dT%H:%M:%S', read_only=True)
@@ -20,10 +20,9 @@ class JobSerializer(serializers.ModelSerializer):
         return value
 
 class JobSeekerApplicationSerializer(serializers.ModelSerializer):
-    job = serializers.ForeignKey(queryset=Job.objects.all())
-    applicant = serializers.ForeignKeyRelatedFieald(read_only=True)
+    job = serializers.PrimaryKeyRelatedField(queryset=Job.objects.all())
+    applicant = serializers.PrimaryKeyRelatedField(read_only=True)
     cover_letter = serializers.FileField(required=False)
-    applied_at = serializers.DateTimeField(format='%Y-%m-%dT%H:%M:%S')
 
     class Meta:
         model = JobSeekerApplication
@@ -31,9 +30,8 @@ class JobSeekerApplicationSerializer(serializers.ModelSerializer):
 
     read_only_fields = ['status', 'applied_at']
 
-    MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
-
     def validate_file_extension(self, file):
+        MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
         valid_extensions = ['.pdf', '.docx']
         ext = os.path.splitext(file.name)[1].lower()
         if ext not in valid_extensions:

@@ -1,27 +1,25 @@
 from rest_framework.permissions import BasePermission
 
-# Allows access only to users with the 'recruiter' role.
-class IsRecruiter(BasePermission):
-    message = "Permission denied because you are not authenticated or a recruiter." # Custom error message
+# Allows job modification to the recruiter.
+class IsJobPoster(BasePermission):
+    message = "Permission denied because you did not create this job." # Custom error message
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == "recruiter"
+        return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        if obj.user == request.user:
+        if obj.recruiter == self.request.user.recruiter_profile:
             return True
         return False
 
-# Allows access only to users who are staff members.
-class IsStaff(BasePermission):
-    message = "Permission denied because you are not a staff." # Custom error message
+# Allows access only to job seekers.
+class IsJobApplicant(BasePermission):
+    message = "Permission denied because you did not apply to this job." # Custom error message
 
     def has_permission(self, request, view):
-        if request.user.is_authenticated and request.user.is_staff:
-            return True
-        return False
+        return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        if request.user.is_staff:
+        if obj.applicant == self.request.user.job_seeker_profile:
             return True
         return False

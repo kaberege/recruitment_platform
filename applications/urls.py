@@ -1,15 +1,11 @@
-from django.urls import path
-
-urlpatterns = [
-    
-]
-""" 
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import JobViewSet, JobSeekerApplicationViewSet
 
 router = DefaultRouter()
-router.register(r'jobs', JobViewSet)
-router.register(r'applications', JobSeekerApplicationViewSet)
+router.register(r'jobs', JobViewSet, basename="posted-jobs")
+router.register(r'applications', JobSeekerApplicationViewSet, basename="applicant-details")
 
-urlpatterns = router.urls
- """
+urlpatterns = [
+    path("", include(router.urls)),   
+]
