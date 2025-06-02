@@ -4,11 +4,22 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from .serializers import RegisterUserSerializer, UpdateUserSerializer, LoginUserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 User = get_user_model()  # Custom user model
 
 # Handle user registration logic
 class RegisterUserView(views.APIView):
+    @swagger_auto_schema(
+        operation_summary="Register a user",
+        operation_description="Register a new user.",
+        request_body=RegisterUserSerializer,
+        responses={
+            201: openapi.Response('User registered successfully'),
+            400: 'Validation error'
+        }
+    )
     def post(self, request):
         # Initialize the serializer with the provided request data
         serializer = RegisterUserSerializer(data=request.data)
@@ -25,6 +36,15 @@ class RegisterUserView(views.APIView):
 
 # Handle user login logic
 class LoginUserView(views.APIView):
+    @swagger_auto_schema(
+        operation_summary="User Login",
+        operation_description="Login a user and get JWT tokens.",
+        request_body=LoginUserSerializer,
+        responses={
+            200: openapi.Response('JWT token returned'),
+            400: 'Invalid email or password'
+        }
+    )
     def post(self, request):
         # Initialize the login serializer with the provided request data
         serializer = LoginUserSerializer(data=request.data)
@@ -55,6 +75,15 @@ class LoginUserView(views.APIView):
 class UpdateUserView(views.APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_summary="Update User",
+        operation_description="Update current authenticated user.",
+        request_body=UpdateUserSerializer,
+        responses={
+            200: openapi.Response('User updated successfully'),
+            400: 'Validation error'
+        }
+    )
     def put(self, request):
         instance = request.user
         serializer = UpdateUserSerializer(instance, data=request.data, partial=True)
@@ -67,7 +96,18 @@ class UpdateUserView(views.APIView):
 # This view uses the refresh token to blacklist it on logout
 class LogoutUserView(views.APIView):
     permission_classes = [IsAuthenticated]
-
+    
+    @swagger_auto_schema(
+        operation_summary="Logout User",
+        operation_description="Logout a user by blacklisting their refresh token.",
+        manual_parameters=[
+            openapi.Parameter('refresh', openapi.IN_QUERY, type=openapi.TYPE_STRING)
+        ],
+        responses={
+            205: openapi.Response('Successfully logged out'),
+            400: 'Invalid or already blacklisted token'
+        }
+    )
     def post(self, request):
         try:
             refresh_token = request.data["refresh"]
@@ -80,7 +120,15 @@ class LogoutUserView(views.APIView):
 # Handle user delete logic
 class DeleteUserView(views.APIView):
     permission_classes = [IsAuthenticated]
-
+    
+    @swagger_auto_schema(
+        operation_summary="Delete User",
+        operation_description="Delete the current user.",
+        responses={
+            204: openapi.Response('User deleted'),
+            400: 'Error deleting user'
+        }
+    )
     def delete(self, request):
         instance = request.user
         instance.delete()  # Delete the user
