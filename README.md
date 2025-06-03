@@ -66,7 +66,7 @@ bash
 Copy
 Edit
 # Clone the repository
-git clone https://github.com/yourusername/recruitment-platform.git
+git clone https://github.com/kaberege/recruitment_platform.git
 cd recruitment-platform
 
 # Create virtual environment & activate
