@@ -2,7 +2,7 @@ from rest_framework import status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
-from .serializers import RegisterUserSerializer, UpdateUserSerializer, LoginUserSerializer
+from .serializers import RegisterUserSerializer, UpdateUserSerializer, LoginUserSerializer, LogoutUserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -100,21 +100,22 @@ class LogoutUserView(views.APIView):
     @swagger_auto_schema(
         operation_summary="Logout User",
         operation_description="Logout a user by blacklisting their refresh token.",
-        manual_parameters=[
-            openapi.Parameter('refresh', openapi.IN_QUERY, type=openapi.TYPE_STRING)
-        ],
+        request_body=LogoutUserSerializer,
         responses={
             205: openapi.Response('Successfully logged out'),
             400: 'Invalid or already blacklisted token'
         }
     )
     def post(self, request):
+        serializer = LogoutUserSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         try:
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response({"message": "Successfully logged out"}, status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
+        except Exception as error:
             return Response({"error": "Invalid token or already blacklisted"}, status=status.HTTP_400_BAD_REQUEST)
         
 # Handle user delete logic

@@ -23,7 +23,7 @@ class JobViewSet(viewsets.ModelViewSet):
     
     @swagger_auto_schema(
         operation_description="List all jobs created by the recruiter.",
-        peration_summary="List Jobs"
+        operation_summary="List Jobs"
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)

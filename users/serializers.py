@@ -47,4 +47,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 class LoginUserSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+# Serializer class for user logout
+class LogoutUserSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
     

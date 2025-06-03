@@ -8,9 +8,13 @@ class IsJobPoster(BasePermission):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        if obj.recruiter == self.request.user.recruiter_profile:
-            return True
-        return False
+        try:
+            if obj.recruiter == request.user.recruiter_profile:
+                return True
+            return False
+        except Exception as error:
+            return False
+        
 
 # Allows access only to job seekers.
 class IsJobApplicant(BasePermission):
@@ -20,6 +24,10 @@ class IsJobApplicant(BasePermission):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        if obj.applicant == self.request.user.job_seeker_profile:
-            return True
-        return False
+        try:
+            if obj.applicant == request.user.job_seeker_profile:
+                return True
+            return False
+        except Exception as error:
+            return False
+        
